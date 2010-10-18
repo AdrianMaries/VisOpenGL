@@ -15,6 +15,8 @@ int main(int argc, char **argv)
 	gl_setup();
 	my_setup();
 	int rows = 5, columns = 25;
+
+	// Reads the specified number of rows and columns from the data file
 	read_data(argv[1], rows, columns);
 	output_data(rows, columns);
 
@@ -117,11 +119,13 @@ void read_data(std::string input_file, int rows, int columns)
 	getline(file, value);
 	while(file.good() && row_count++ < rows)
 	{
+		// Read line by line
 		getline(file, value);
 		std::istringstream line(value);
 		column_count = 0;
 		while(line.good() && column_count++ < columns)
 		{
+			// Parse each line using "," as a separator
 			getline(line, value, ',');
 			data[row_count - 1][column_count - 1] = atof(value.c_str());
 		}
