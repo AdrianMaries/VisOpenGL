@@ -107,7 +107,7 @@ void my_setup(int argc, char** argv)
 	color  = BLUE;
 
 	// Reads the specified number of rows and columns from the data file
-	if(argc > 2){
+	if(argc > 1){
 		read_data(argv[1], 507, 25);
 	}
 
