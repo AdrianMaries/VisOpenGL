@@ -31,6 +31,11 @@ double sph_ray;
 
 int main(int argc, char **argv)
 {
+	if(argc < 2){
+		printf("usage: MultiDimScatterPlot [FILE]\nFILE: A CSV file containing the data to be plotted\n");
+		return(0);
+	}
+
 	/* General initialization for GLUT and OpenGL
 	Must be called first */
 	glutInit(&argc, argv);
@@ -102,7 +107,9 @@ void my_setup(int argc, char** argv)
 	color  = BLUE;
 
 	// Reads the specified number of rows and columns from the data file
-	read_data(argv[1], 507, 25);
+	if(argc > 2){
+		read_data(argv[1], 507, 25);
+	}
 
 	// Find min and max for each column
 	get_data_stats();

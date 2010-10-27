@@ -13,5 +13,6 @@ clean:
 
 
 run:
-	MultiDimScatterPlot smoothed.CSV # run with default data
+	./MultiDimScatterPlot smoothed.CSV # run with default data
 
+	
