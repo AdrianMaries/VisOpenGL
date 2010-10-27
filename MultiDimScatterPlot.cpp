@@ -3,6 +3,7 @@
 #include "MultiDimScatterPlot.h"
 
 double data[600][25];
+double data_norm[600][25];
 double max_data[25];
 double min_data[25];
 
@@ -24,18 +25,13 @@ int crt_render_mode;
 // Approximation of the sphere (numbers of circles in the vertical, horizontal planes)
 int crt_rs, crt_vs;
 
-// Stores the color of the sphere
-int color;
+// Stores the color for the spheres
+GLfloat color[4];
 
 double sph_ray;
 
 int main(int argc, char **argv)
 {
-	if(argc < 2){
-		printf("usage: MultiDimScatterPlot [FILE]\nFILE: A CSV file containing the data to be plotted\n");
-		return(0);
-	}
-
 	/* General initialization for GLUT and OpenGL
 	Must be called first */
 	glutInit(&argc, argv);
@@ -104,15 +100,13 @@ void my_setup(int argc, char** argv)
 	crt_vs = 5;
 	crt_render_mode = GL_POLYGON;
 	sph_ray = 1;
-	color  = BLUE;
 
 	// Reads the specified number of rows and columns from the data file
-	if(argc > 1){
-		read_data(argv[1], 507, 25);
-	}
+	read_data(argv[1], 507, 25);
 
 	// Find min and max for each column
 	get_data_stats();
+	normalize_data();
 	//output_data();
 
 	return;
@@ -142,9 +136,9 @@ void my_display() {
 	glRotatef(theta_y, 0, 1, 0);
 	glRotatef(theta_z, 0, 0, 1);
 
-	int col_x = 1, col_y = 2, col_z = 3;
+	int col_x = 1, col_y = 2, col_z = 3, col_size = 4, col_color = 5;
 	draw_axes(0, 0, 0, max_data[col_x], max_data[col_y], max_data[col_z]);
-	draw_data(col_x, col_y, col_z);
+	draw_data(col_x, col_y, col_z, col_size, col_color);
 
 	/* buffer is ready */
 	glutSwapBuffers();
@@ -206,10 +200,10 @@ void make_sphere(double ray, int rs, int vs)
 	}
 }
 
-void draw_param_quad(GLfloat vertices[][50][4], int line, int col, int ic)
+void draw_param_quad(GLfloat vertices[][50][4], int line, int col)
 {
 	glBegin(crt_render_mode);
-	glColor3fv(colors[ic]);
+	glColor4fv(color);
 		glVertex4fv(vertices[line][col]);
 		glVertex4fv(vertices[line+1][col]);
 		glVertex4fv(vertices[line+1][col-1]);
@@ -225,7 +219,7 @@ void draw_sphere(int rs, int vs)
 	{
 		for (r = 0; r < rs; r++)
 		{
-			draw_param_quad(vertices_sph,  r , v, color);
+			draw_param_quad(vertices_sph,  r , v);
 		}
 	}
 }
@@ -238,10 +232,29 @@ void draw_glyph_sphere(double x, double y, double z, double scale_factor)
 	draw_sphere(crt_rs, crt_vs);
 }
 
-void draw_data(int x_col, int y_col, int z_col)
+void draw_data(int x_col, int y_col, int z_col, int size_col, int color_col)
 {
 	for(int i = 0; i < rows; i++)
-		draw_glyph_sphere(data[i][x_col], data[i][y_col], data[i][z_col], 1);
+	{
+		if(data_norm[i][color_col] < 0.5)
+		{
+			color[0] = data_norm[i][color_col] * 2;
+			color[1] = data_norm[i][color_col] * 2;
+			color[2] = 1.0;
+			color[3] = 1.0;
+		}
+//			glColor3d(data_norm[i][color_col] * 2, data_norm[i][color_col] * 2, 1.0);
+		else
+		{
+			color[0] = 1.0;
+			color[1] = 1.0 - (data_norm[i][color_col] - 0.5) * 2;
+			color[2] = 1.0 - (data_norm[i][color_col] - 0.5) * 2;
+			color[3] = 1.0;
+		}
+//			glColor3d(1.0, 1.0 - (data_norm[i][color_col] - 0.5) * 2, 1.0 - (data_norm[i][color_col] - 0.5) * 2);
+
+		draw_glyph_sphere(data[i][x_col], data[i][y_col], data[i][z_col], data_norm[i][size_col]);
+	}
 }
 
 void my_keyboard(unsigned char key, int x, int y)
@@ -251,7 +264,6 @@ x/X//y/Y//z/Z rotates the camera around the x // y // z axis
 -/= changes the numebr of vertical circles used to approximate the sphere
 ,/. changes the number of horizontal circles used to approximate the sphere
 */
-
 {
 	switch(key)
 	{
@@ -365,11 +377,22 @@ void scale(GLfloat verts[][50][4], double x, double y, double z, int rs, int vs)
 
 void output_data()
 {
-	for (int i = 0; i < rows; i++)
+	for(int i = 0; i < rows; i++)
 	{
 		for(int j = 0; j < cols; j++)
 			std::cout << data[i][j] << "\t";
 		std::cout << std::endl;
+	}
+}
+
+void normalize_data()
+{
+	for(int i = 0; i < rows; i++)
+		data_norm[i][0] = data[i][0];
+	for(int i = 1; i < rows; i++)
+	{
+		for(int j = 0; j < cols; j++)
+			data_norm[i][j] = data[i][j] / max_data[j];
 	}
 }
 

@@ -7,13 +7,7 @@ OSX users: include glut/glut.h below instead of GL/glut.h
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef _WIN32 
 #include <GL/glut.h>
-#else
-#include <glut/glut.h>
-#endif 
-
 #define _USE_MATH_DEFINES
 #include <math.h>
 
@@ -53,16 +47,17 @@ void my_reshape(int w, int h);
 void my_mouse(int button, int state, int mousex, int mousey);
 void my_keyboard(unsigned char key, int x, int y);
 void read_data(std::string input_file, int rows, int columns);
+void normalize_data();
 void get_data_stats();
 void output_data();
 
 void make_sphere(double ray, int rs, int vs);
 void draw_axes(double min_x, double min_y, double min_z, double max_x, double max_y, double max_z);
 void draw_line(double x1, double y1, double z1, double x2, double y2, double z2, int color, double alpha);
-void draw_param_quad(GLfloat vertices[][50][4], int line, int col, int ic);
+void draw_param_quad(GLfloat vertices[][50][4], int line, int col);
 void draw_sphere(int rs, int vs);
 void draw_glyph_sphere(double x, double y, double z, double scale_factor);
-void draw_data(int x_col, int y_col, int z_col);
+void draw_data(int x_col, int y_col, int z_col, int size_col, int color_col);
 
 void translate(GLfloat verts[][50][4], double x, double y, double z, int rs, int vs);
 void scale(GLfloat verts[][50][4], double x, double y, double z, int rs, int vs);
