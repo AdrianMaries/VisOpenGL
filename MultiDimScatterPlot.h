@@ -7,7 +7,7 @@ OSX users: include glut/glut.h below instead of GL/glut.h
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
-#include <GL/glut.h>
+#include <glut/glut.h>
 #define _USE_MATH_DEFINES
 #include <math.h>
 
