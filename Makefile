@@ -3,11 +3,9 @@ MY_ARCH := $(shell uname)
 FILES := MultiDimScatterPlot.cpp
 
 all:
-	ifeq(${MY_ARCH},Darwin)
+#ifeq(${MY_ARCH}, Darwin)
 		c++ -framework GLUT -framework OpenGL -o MultiDimScatterPlot ${FILES}
-	else 
-		# TODO: Update with Linux build command
-	endif
+#endif
 
 clean:
 	rm *.out
